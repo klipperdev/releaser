@@ -13,11 +13,19 @@ namespace Klipper\Tool\Releaser\Console;
 
 use Composer\Semver\Semver;
 use Klipper\Tool\Releaser\Command\AboutCommand;
+use Klipper\Tool\Releaser\Exception\RuntimeException;
+use Klipper\Tool\Releaser\IO\ConsoleIO;
+use Klipper\Tool\Releaser\IO\IOInterface;
+use Klipper\Tool\Releaser\IO\NullIO;
 use Klipper\Tool\Releaser\Json\Json;
 use Klipper\Tool\Releaser\Releaser;
 use Symfony\Component\Console\Application as BaseApplication;
 use Symfony\Component\Console\Helper\FormatterHelper;
+use Symfony\Component\Console\Helper\HelperSet;
+use Symfony\Component\Console\Helper\QuestionHelper;
+use Symfony\Component\Console\Input\InputDefinition;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\ConsoleOutputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -28,6 +36,8 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class Application extends BaseApplication
 {
+    protected IOInterface $io;
+
     private static string $logo = "
   ____        _
  |  _ \  ___ | |  ___   __ _  ___   ___  _ __
@@ -36,9 +46,22 @@ class Application extends BaseApplication
  |_| \_\\___||_| \___| \__,_||___/ \___||_|
 ";
 
+    /**
+     * Store the initial working directory at startup time.
+     */
+    private string $initialWorkingDirectory;
+
     public function __construct()
     {
+        $this->initialWorkingDirectory = getcwd();
+        $this->io = new NullIO();
+
         parent::__construct(Releaser::NAME, Releaser::VERSION);
+    }
+
+    public function getIO(): IOInterface
+    {
+        return $this->io;
     }
 
     public function getHelp(): string
@@ -70,11 +93,38 @@ class Application extends BaseApplication
             $input->setInteractive(false);
         }
 
+        $io = $this->io = new ConsoleIO($input, $output, new HelperSet([
+            new QuestionHelper(),
+        ]));
+
         if (!$this->validatePhp($output)) {
             return 1;
         }
 
-        return parent::doRun($input, $output);
+        // switch working dir
+        if ($newWorkDir = $this->getNewWorkingDir($input)) {
+            $oldWorkingDir = getcwd();
+            chdir($newWorkDir);
+            $this->initialWorkingDirectory = $newWorkDir;
+            $io->write('Changed CWD to '.getcwd(), true, OutputInterface::VERBOSITY_DEBUG);
+        }
+
+        if ($input->hasParameterOption('--profile')) {
+            $startTime = microtime(true);
+            $this->io->enableDebugging($startTime);
+        }
+
+        $result = parent::doRun($input, $output);
+
+        if (isset($oldWorkingDir)) {
+            chdir($oldWorkingDir);
+        }
+
+        if (isset($startTime)) {
+            $io->writeError('<info>Time: '.round(microtime(true) - $startTime, 2).'s');
+        }
+
+        return $result;
     }
 
     protected function getDefaultCommands(): array
@@ -82,6 +132,15 @@ class Application extends BaseApplication
         return array_merge(parent::getDefaultCommands(), [
             new AboutCommand(),
         ]);
+    }
+
+    protected function getDefaultInputDefinition(): InputDefinition
+    {
+        $definition = parent::getDefaultInputDefinition();
+        $definition->addOption(new InputOption('--profile', null, InputOption::VALUE_NONE, 'Display timing information'));
+        $definition->addOption(new InputOption('--working-dir', '-d', InputOption::VALUE_REQUIRED, 'If specified, use the given directory as working directory'));
+
+        return $definition;
     }
 
     protected function validatePhp(OutputInterface $output): bool
@@ -125,5 +184,19 @@ class Application extends BaseApplication
         }
 
         return $res;
+    }
+
+    /**
+     * @throws RuntimeException
+     */
+    private function getNewWorkingDir(InputInterface $input): string
+    {
+        $workingDir = $input->getParameterOption(['--working-dir', '-d']);
+
+        if (false !== $workingDir && !is_dir($workingDir)) {
+            throw new RuntimeException(sprintf('Invalid working directory specified, "%s" does not exist', $workingDir));
+        }
+
+        return $workingDir;
     }
 }

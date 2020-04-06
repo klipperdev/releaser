@@ -11,14 +11,13 @@
 
 namespace Klipper\Tool\Releaser\Command;
 
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * @author François Pluchino <francois.pluchino@klipper.dev>
  */
-class AboutCommand extends Command
+class AboutCommand extends BaseCommand
 {
     protected function configure(): void
     {
