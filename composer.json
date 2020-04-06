@@ -1,0 +1,47 @@
+{
+    "name": "klipper/releaser",
+    "type": "library",
+    "description": "Tool to split and release the main repository into many library repositories",
+    "keywords" : ["project", "release", "tool", "git", "mono-repository", "many-repository"],
+    "homepage" : "https://github.com/klipperdev/releaser",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "François Pluchino",
+            "email": "francois.pluchino@klipper.dev"
+        }
+    ],
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "config": {
+        "preferred-install": {
+            "*": "dist"
+        },
+        "sort-packages": true
+    },
+    "autoload": {
+        "psr-4": {
+            "Klipper\\Tool\\Releaser\\": "src/"
+        }
+    },
+    "bin": [
+        "bin/releaser"
+    ],
+    "require": {
+        "php": "^7.4.0",
+        "ext-phar": "*",
+        "composer/semver": "^1.5",
+        "seld/phar-utils": "^1.1.0",
+        "symfony/console": "^5.0.0",
+        "symfony/finder": "^5.0.0",
+        "symfony/process": "^5.0.0"
+    },
+    "replace": {
+        "symfony/polyfill-php73": "*"
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.0-dev"
+        }
+    }
+}
