@@ -29,12 +29,12 @@ class Factory
     /**
      * @throws RuntimeException
      */
-    public function getHomeDir(): string
+    public static function getHomeDir(): string
     {
         $home = getenv('KLIPPER_RELEASER_HOME');
 
         if (!$home) {
-            $home = $this->getUserDir();
+            $home = static::getUserDir();
 
             if ($home) {
                 return $home.'/.klipperReleaser';
@@ -47,7 +47,7 @@ class Factory
     /**
      * @throws RuntimeException
      */
-    public function getUserDir(): string
+    public static function getUserDir(): string
     {
         return rtrim(getenv('HOME') ?: getenv('USERPROFILE'), '/\\');
     }
@@ -55,13 +55,13 @@ class Factory
     /**
      * @param null|array|string $localConfig
      */
-    public function createConfig(IOInterface $io, ?string $cwd = null): Config
+    public static function createConfig(IOInterface $io, ?string $cwd = null): Config
     {
         $cwd = $cwd ?: (string) getcwd();
         $config = new Config($cwd);
 
         $config->merge([
-            'home' => $this->getHomeDir(),
+            'home' => static::getHomeDir(),
         ]);
 
         // load global config
@@ -113,7 +113,7 @@ class Factory
             $localConfig = $file->read();
         }
 
-        $config = $this->createConfig($io, $cwd);
+        $config = static::createConfig($io, $cwd);
         $config->merge($localConfig);
 
         if ($releaserFile) {
