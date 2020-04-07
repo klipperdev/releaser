@@ -13,7 +13,9 @@ namespace Klipper\Tool\Releaser\Console;
 
 use Composer\Semver\Semver;
 use Klipper\Tool\Releaser\Command\AboutCommand;
+use Klipper\Tool\Releaser\Command\ValidateCommand;
 use Klipper\Tool\Releaser\Exception\RuntimeException;
+use Klipper\Tool\Releaser\Factory;
 use Klipper\Tool\Releaser\IO\ConsoleIO;
 use Klipper\Tool\Releaser\IO\IOInterface;
 use Klipper\Tool\Releaser\IO\NullIO;
@@ -37,6 +39,10 @@ use Symfony\Component\Console\Output\OutputInterface;
 class Application extends BaseApplication
 {
     protected IOInterface $io;
+
+    protected ?Releaser $releaser = null;
+
+    protected ?string $configFile = null;
 
     private static string $logo = "
   ____        _
@@ -62,6 +68,23 @@ class Application extends BaseApplication
     public function getIO(): IOInterface
     {
         return $this->io;
+    }
+
+    /**
+     * @throws
+     */
+    public function getReleaser(): Releaser
+    {
+        if (null === $this->releaser) {
+            try {
+                $this->releaser = Factory::create($this->io, $this->configFile, $this->initialWorkingDirectory);
+            } catch (\InvalidArgumentException $e) {
+                $this->io->writeError($e->getMessage());
+                exit(1);
+            }
+        }
+
+        return $this->releaser;
     }
 
     public function getHelp(): string
@@ -109,6 +132,11 @@ class Application extends BaseApplication
             $io->write('Changed CWD to '.getcwd(), true, OutputInterface::VERBOSITY_DEBUG);
         }
 
+        // switch configuration file
+        if (($newConfigFile = $input->getParameterOption(['--config', '-c'])) && is_file($newConfigFile)) {
+            $this->configFile = $newConfigFile;
+        }
+
         if ($input->hasParameterOption('--profile')) {
             $startTime = microtime(true);
             $this->io->enableDebugging($startTime);
@@ -131,6 +159,7 @@ class Application extends BaseApplication
     {
         return array_merge(parent::getDefaultCommands(), [
             new AboutCommand(),
+            new ValidateCommand(),
         ]);
     }
 
@@ -139,6 +168,7 @@ class Application extends BaseApplication
         $definition = parent::getDefaultInputDefinition();
         $definition->addOption(new InputOption('--profile', null, InputOption::VALUE_NONE, 'Display timing information'));
         $definition->addOption(new InputOption('--working-dir', '-d', InputOption::VALUE_REQUIRED, 'If specified, use the given directory as working directory'));
+        $definition->addOption(new InputOption('--config', '-c', InputOption::VALUE_REQUIRED, 'If specified, use the given JSON config file'));
 
         return $definition;
     }

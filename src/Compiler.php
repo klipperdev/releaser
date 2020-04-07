@@ -68,6 +68,7 @@ class Compiler
 
         $this->addFile($phar, new \SplFileInfo(__DIR__.'/../composer.json'));
         $this->addFile($phar, new \SplFileInfo(__DIR__.'/../bootstrap.php'));
+        $this->addFile($phar, new \SplFileInfo(__DIR__.'/../res/releaser-schema.json'));
         $this->addFile($phar, new \SplFileInfo(__DIR__.'/../vendor/symfony/console/Resources/bin/hiddeninput.exe'), false);
 
         $finder = new Finder();
@@ -80,6 +81,7 @@ class Compiler
             ->exclude('docs')
             ->exclude('examples')
             ->in(__DIR__.'/../vendor/composer/semver/')
+            ->in(__DIR__.'/../vendor/justinrainbow/json-schema/')
             ->in(__DIR__.'/../vendor/psr/')
             ->in(__DIR__.'/../vendor/symfony/console/')
             ->in(__DIR__.'/../vendor/symfony/polyfill-mbstring/')

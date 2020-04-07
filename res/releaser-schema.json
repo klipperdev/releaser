@@ -1,0 +1,18 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "name": "Package",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "sub-libraries": {
+            "type": "object",
+            "description": "The map between the source path and the GIT repository URL",
+            "patternProperties": {
+                ".+": {
+                    "type": "string",
+                    "description": "The clone URL of the GIT repository"
+                }
+            }
+        }
+    }
+}

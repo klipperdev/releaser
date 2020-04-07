@@ -11,6 +11,8 @@
 
 namespace Klipper\Tool\Releaser;
 
+use Klipper\Tool\Releaser\Config\Config;
+
 /**
  * @author François Pluchino <francois.pluchino@klipper.dev>
  */
@@ -23,4 +25,16 @@ class Releaser
     public const BRANCH_ALIAS_VERSION = '@package_branch_alias_version@';
 
     public const RELEASE_DATE = '@release_date@';
+
+    private Config $config;
+
+    public function __construct(Config $config)
+    {
+        $this->config = $config;
+    }
+
+    public function getConfig(): Config
+    {
+        return $this->config;
+    }
 }

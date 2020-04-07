@@ -29,8 +29,11 @@
     ],
     "require": {
         "php": "^7.4.0",
+        "ext-ctype": "*",
+        "ext-json": "*",
         "ext-phar": "*",
         "composer/semver": "^1.5.0",
+        "justinrainbow/json-schema": "^5.2",
         "psr/log": "^1.1.0",
         "seld/phar-utils": "^1.1.0",
         "symfony/console": "^5.0.0",
