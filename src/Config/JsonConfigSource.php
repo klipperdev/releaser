@@ -96,6 +96,10 @@ class JsonConfigSource implements ConfigSourceInterface
             throw new RuntimeException(sprintf('The file "%s" is not writable', $this->file->getPath()));
         }
 
+        if (empty($config) && !$this->file->exists()) {
+            return;
+        }
+
         $this->file->write($config);
     }
 }
