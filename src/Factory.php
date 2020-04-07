@@ -91,10 +91,6 @@ class Factory
         $cwd = $cwd ?: (string) getcwd();
         $releaserFile = null;
 
-        if (null === $localConfig) {
-            $localConfig = static::getReleaserFile();
-        }
-
         if (\is_string($localConfig)) {
             $releaserFile = $localConfig;
             $file = new JsonFile($localConfig, $io);
@@ -114,7 +110,7 @@ class Factory
         }
 
         $config = static::createConfig($io, $cwd);
-        $config->merge($localConfig);
+        $config->merge($localConfig ?? []);
 
         if ($releaserFile) {
             $io->write(sprintf('Loading config file "%s"', $releaserFile), true, OutputInterface::VERBOSITY_DEBUG);
