@@ -71,7 +71,7 @@ class JsonFile
 
             return Json::load($json, true);
         } catch (\Throwable $e) {
-            throw new RuntimeException('Could not read "'.$this->path.'": '.$e->getMessage());
+            throw new RuntimeException($e->getMessage());
         }
     }
 

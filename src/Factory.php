@@ -65,7 +65,7 @@ class Factory
         ]);
 
         // load global config
-        $file = new JsonFile(sprintf('%s/configs/%s.json', $config->get('home'), GitUtil::getUniqueKey()));
+        $file = new JsonFile(sprintf('%s/%s.json', $config->get('data-dir'), GitUtil::getUniqueKey()));
 
         if ($file->exists()) {
             if (null !== $io && $io->isDebug()) {

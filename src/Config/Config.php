@@ -17,9 +17,9 @@ namespace Klipper\Tool\Releaser\Config;
 class Config
 {
     public static array $defaultConfig = [
-        'data-dir' => '{home}/.klipperReleaser',
         'home' => '.',
-        'sub-libraries' => [],
+        'data-dir' => '{home}/configs',
+        'libraries' => [],
     ];
 
     private array $config;

@@ -49,13 +49,13 @@ class ConfigValidator
             return [$errors, $warnings];
         }
 
-        if (isset($config['sub-libraries']) && !empty($config['sub-libraries'])) {
-            foreach ($config['sub-libraries'] as $path => $gitUrl) {
+        if (isset($config['libraries']) && !empty($config['libraries'])) {
+            foreach ($config['libraries'] as $path => $gitUrl) {
                 $pattern = '/^([A-Za-z0-9]+@|http(|s)\:\/\/)([A-Za-z0-9.]+(:\d+)?)(?::|\/)([\/\w.-]+?)(\.git)?$/i';
                 preg_match($pattern, $gitUrl, $matches);
 
                 if (empty($matches)) {
-                    $warnings[] = sprintf('The "sub-libraries[%s]" value must contain a valid URL of GIT repository', $path);
+                    $warnings[] = sprintf('The "libraries[%s]" value must contain a valid URL of GIT repository', $path);
                 }
             }
         }

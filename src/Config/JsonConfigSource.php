@@ -32,12 +32,34 @@ class JsonConfigSource implements ConfigSourceInterface
     }
 
     /**
+     * @param mixed $value
+     *
+     * @throws \Throwable
+     */
+    public function set(string $key, $value): void
+    {
+        $config = $this->readJson();
+        $config[$key] = $value;
+        $this->saveJson($config);
+    }
+
+    /**
+     * @throws \Throwable
+     */
+    public function unset(string $key): void
+    {
+        $config = $this->readJson();
+        unset($config[$key]);
+        $this->saveJson($config);
+    }
+
+    /**
      * @throws \Throwable
      */
     public function addLibrary(string $path, string $url): void
     {
         $config = $this->readJson();
-        $config['sub-library'][$path] = $url;
+        $config['libraries'][$path] = $url;
         $this->saveJson($config);
     }
 
@@ -47,7 +69,7 @@ class JsonConfigSource implements ConfigSourceInterface
     public function removeLibrary(string $path): void
     {
         $config = $this->readJson();
-        unset($config['sub-library'][$path]);
+        unset($config['libraries'][$path]);
         $this->saveJson($config);
     }
 

@@ -4,9 +4,9 @@
     "type": "object",
     "additionalProperties": false,
     "properties": {
-        "sub-libraries": {
+        "libraries": {
             "type": "object",
-            "description": "The map between the source path and the GIT repository URL",
+            "description": "The map between the source path of library and the GIT repository URL",
             "patternProperties": {
                 ".+": {
                     "type": "string",
