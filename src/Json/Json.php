@@ -96,7 +96,7 @@ class Json
     public static function encode(array $data): string
     {
         try {
-            return json_encode($data, JSON_THROW_ON_ERROR, 512);
+            return json_encode($data, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR, 512);
         } catch (\Throwable $e) {
             throw new JsonException(sprintf('JSON encoding failed: %s', $e->getMessage()));
         }
