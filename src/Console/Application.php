@@ -78,7 +78,7 @@ class Application extends BaseApplication
         if (null === $this->releaser) {
             try {
                 $this->releaser = Factory::create($this->io, $this->configFile, $this->initialWorkingDirectory);
-            } catch (\InvalidArgumentException $e) {
+            } catch (\Throwable $e) {
                 $this->io->writeError($e->getMessage());
                 exit(1);
             }

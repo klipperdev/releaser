@@ -13,7 +13,6 @@ namespace Klipper\Tool\Releaser;
 
 use Klipper\Tool\Releaser\Config\Config;
 use Klipper\Tool\Releaser\Config\JsonConfigSource;
-use Klipper\Tool\Releaser\Exception\InvalidArgumentException;
 use Klipper\Tool\Releaser\Exception\JsonException;
 use Klipper\Tool\Releaser\Exception\JsonValidationException;
 use Klipper\Tool\Releaser\Exception\RuntimeException;
@@ -107,7 +106,7 @@ class Factory
                     $message = sprintf('Releaser could not find the config file in %s', $localConfig);
                 }
 
-                throw new InvalidArgumentException($message);
+                throw new RuntimeException($message);
             }
 
             $file->validateSchema(JsonFile::LAX_SCHEMA);
