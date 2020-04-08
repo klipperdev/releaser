@@ -11,6 +11,7 @@
 
 namespace Klipper\Tool\Releaser\Util;
 
+use Composer\Semver\Semver;
 use Symfony\Component\Process\Process;
 
 /**
@@ -18,6 +19,33 @@ use Symfony\Component\Process\Process;
  */
 class GitUtil
 {
+    public const REQUIRED_VERSION = '^2.20';
+
+    public static function getVersion(): ?string
+    {
+        $p = new Process(['git', '--version']);
+        $p->run();
+
+        $res = ProcessUtil::runSingleResult(['git', '--version']);
+        $parts = explode('.', trim(str_replace('git version', '', $res)));
+
+        if (!empty($parts)) {
+            $parts = \array_slice($parts, 0, min(3, \count($parts)));
+        }
+
+        return implode('.', $parts) ?: null;
+    }
+
+    public static function validateVersion(): void
+    {
+        if (!Semver::satisfies(static::getVersion(), static::REQUIRED_VERSION)) {
+            throw new RuntimeException(sprintf(
+                'Git must be installed and this tool requires the "%s" version',
+                static::REQUIRED_VERSION
+            ));
+        }
+    }
+
     public static function getUniqueKey(?string $remoteName = null): ?string
     {
         $url = static::getRemoteUrl($remoteName);
