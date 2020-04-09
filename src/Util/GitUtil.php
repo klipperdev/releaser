@@ -12,7 +12,7 @@
 namespace Klipper\Tool\Releaser\Util;
 
 use Composer\Semver\Semver;
-use Symfony\Component\Process\Process;
+use Klipper\Tool\Releaser\Exception\RuntimeException;
 
 /**
  * @author François Pluchino <francois.pluchino@klipper.dev>
@@ -23,9 +23,6 @@ class GitUtil
 
     public static function getVersion(): ?string
     {
-        $p = new Process(['git', '--version']);
-        $p->run();
-
         $res = ProcessUtil::runSingleResult(['git', '--version']);
         $parts = explode('.', trim(str_replace('git version', '', $res)));
 
@@ -55,23 +52,45 @@ class GitUtil
             : null;
     }
 
+    public static function getRemotes(): iterable
+    {
+        return ProcessUtil::runArrayResult(['git', 'remote']);
+    }
+
     public static function getRemoteUrl(?string $remote = null): ?string
     {
         $remoteUrl = null;
 
         if (empty($remote)) {
-            $process = new Process(['git', 'remote']);
-            $process->run();
-            $remote = $process->isSuccessful() ? trim($process->getOutput()) : '';
+            $remote = ProcessUtil::runSingleResult(['git', 'remote']);
         }
 
         if (!empty($remote)) {
-            $remote = trim(explode(PHP_EOL, $remote)[0]);
-            $process = new Process(['git', 'remote', 'get-url', $remote]);
-            $process->run();
-            $remoteUrl = $process->isSuccessful() ? trim($process->getOutput()) : '';
+            $remote = trim(explode("\n", $remote)[0]);
+            $remoteUrl = ProcessUtil::runSingleResult(['git', 'remote', 'get-url', $remote]);
         }
 
         return !empty($remoteUrl) ? $remoteUrl : null;
+    }
+
+    public static function getCurrentBranch(): ?string
+    {
+        return ProcessUtil::runSingleResult(['git', 'rev-parse', '--abbrev-ref', 'HEAD']);
+    }
+
+    /**
+     * @return string[]
+     */
+    public static function getBranches(): iterable
+    {
+        return ProcessUtil::runArrayResult(['git', 'branch', '--remotes', '--format', '%(refname:short)']);
+    }
+
+    /**
+     * @return string[]
+     */
+    public static function getModifiedFiles(string $branch, int $depth = 1): iterable
+    {
+        return ProcessUtil::runArrayResult(['git', 'diff', '--name-only', $branch.'~'.$depth]);
     }
 }
