@@ -19,6 +19,17 @@ use Symfony\Component\Process\Process;
  */
 class ProcessUtil
 {
+    public static function run(Process $process, bool $thrownException = true): Process
+    {
+        $process->setTimeout(0)->run();
+
+        if ($thrownException && !$process->isSuccessful()) {
+            throw new ProcessFailedException($process);
+        }
+
+        return $process;
+    }
+
     public static function runSingleResult(array $command): ?string
     {
         $p = new Process($command);

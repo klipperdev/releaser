@@ -89,8 +89,46 @@ class GitUtil
     /**
      * @return string[]
      */
+    public static function getBranchNames(string $remote): iterable
+    {
+        $prefix = $remote.'/';
+        $branches = [];
+
+        foreach (static::getBranches() as $branch) {
+            if (0 === strpos($branch, $prefix)) {
+                $branches[] = substr($branch, strlen($prefix));
+            }
+        }
+
+        return $branches;
+    }
+
+    /**
+     * @return string[]
+     */
     public static function getModifiedFiles(string $branch, int $depth = 1): iterable
     {
         return ProcessUtil::runArrayResult(['git', 'diff', '--name-only', $branch.'~'.$depth]);
+    }
+
+    /**
+     * @return string[]
+     */
+    public static function getLibraries(array $libraries, string $branch, int $depth = 1): iterable
+    {
+        $files = static::getModifiedFiles($branch, $depth);
+        $libraryPaths = array_keys($libraries);
+        $paths = [];
+
+        foreach ($files as $file) {
+            foreach ($libraryPaths as $libraryPath) {
+                if (0 === strpos($file, $libraryPath)) {
+                    $paths[] = $libraryPath;
+                    break;
+                }
+            }
+        }
+
+        return array_unique($paths);
     }
 }
