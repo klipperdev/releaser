@@ -14,6 +14,7 @@ namespace Klipper\Tool\Releaser\Console;
 use Composer\Semver\Semver;
 use Klipper\Tool\Releaser\Command\AboutCommand;
 use Klipper\Tool\Releaser\Command\ConfigCommand;
+use Klipper\Tool\Releaser\Command\SplitCommand;
 use Klipper\Tool\Releaser\Command\ValidateCommand;
 use Klipper\Tool\Releaser\Exception\RuntimeException;
 use Klipper\Tool\Releaser\Factory;
@@ -162,6 +163,7 @@ class Application extends BaseApplication
             new AboutCommand(),
             new ValidateCommand(),
             new ConfigCommand(),
+            new SplitCommand(),
         ]);
     }
 
