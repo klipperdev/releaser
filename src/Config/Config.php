@@ -19,6 +19,8 @@ class Config
     public static array $defaultConfig = [
         'home' => '.',
         'data-dir' => '{home}/configs',
+        'branch-pattern' => null,
+        'adapter' => null,
         'libraries' => [],
     ];
 

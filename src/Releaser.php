@@ -12,6 +12,7 @@
 namespace Klipper\Tool\Releaser;
 
 use Klipper\Tool\Releaser\Config\Config;
+use Klipper\Tool\Releaser\Splitter\SplitterInterface;
 
 /**
  * @author François Pluchino <francois.pluchino@klipper.dev>
@@ -28,13 +29,21 @@ class Releaser
 
     private Config $config;
 
-    public function __construct(Config $config)
+    private SplitterInterface $splitter;
+
+    public function __construct(Config $config, SplitterInterface $splitter)
     {
         $this->config = $config;
+        $this->splitter = $splitter;
     }
 
     public function getConfig(): Config
     {
         return $this->config;
+    }
+
+    public function getSplitter(): SplitterInterface
+    {
+        return $this->splitter;
     }
 }

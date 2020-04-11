@@ -60,6 +60,14 @@ class ConfigValidator
             }
         }
 
+        $availableAdapters = ['subtree'];
+
+        if (\array_key_exists('adapter', $config)
+                && null !== $config['adapter']
+                && !\in_array($config['adapter'], $availableAdapters, true)) {
+            $errors[] = sprintf('The "%s" adapter of spitter is not available, only: %s', $config['adapter'], implode(', ', $availableAdapters));
+        }
+
         return [$errors, $warnings];
     }
 }

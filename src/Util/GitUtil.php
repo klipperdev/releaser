@@ -96,7 +96,7 @@ class GitUtil
 
         foreach (static::getBranches() as $branch) {
             if (0 === strpos($branch, $prefix)) {
-                $branches[] = substr($branch, strlen($prefix));
+                $branches[] = substr($branch, \strlen($prefix));
             }
         }
 
@@ -124,6 +124,7 @@ class GitUtil
             foreach ($libraryPaths as $libraryPath) {
                 if (0 === strpos($file, $libraryPath)) {
                     $paths[] = $libraryPath;
+
                     break;
                 }
             }

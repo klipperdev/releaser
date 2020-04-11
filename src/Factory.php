@@ -18,6 +18,7 @@ use Klipper\Tool\Releaser\Exception\JsonValidationException;
 use Klipper\Tool\Releaser\Exception\RuntimeException;
 use Klipper\Tool\Releaser\IO\IOInterface;
 use Klipper\Tool\Releaser\Json\JsonFile;
+use Klipper\Tool\Releaser\Splitter\Splitter;
 use Klipper\Tool\Releaser\Util\GitUtil;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -117,7 +118,14 @@ class Factory
             $config->setConfigSource(new JsonConfigSource(new JsonFile(realpath($releaserFile), $io)));
         }
 
-        return new Releaser($config);
+        return new Releaser(
+            $config,
+            new Splitter(
+                [
+                ],
+                $io
+            )
+        );
     }
 
     /**
