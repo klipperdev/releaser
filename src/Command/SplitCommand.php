@@ -37,10 +37,11 @@ class SplitCommand extends BaseCommand
         $this
             ->setName('split')
             ->setDescription('Split the main repository into many library repositories')
-            ->addOption('depth', '-D', InputOption::VALUE_REQUIRED, 'Depth history of Git to check the modified files', 1)
+            ->addOption('depth', '-D', InputOption::VALUE_REQUIRED, 'Depth history of Git to check the modified files if all-lib option is not used', 1)
             ->addOption('remote', '-R', InputOption::VALUE_REQUIRED, 'Remote name of GIT repository, by default, the first remote is selected')
             ->addOption('all', '-A', InputOption::VALUE_NONE, 'Check if all branches must be splitted')
-            ->addOption('branch', '-b', InputOption::VALUE_IS_ARRAY | InputOption::VALUE_REQUIRED, 'List of the Git branch names to be splitted, all branches if no branch is specified')
+            ->addOption('all-lib', '-L', InputOption::VALUE_NONE, 'Check if all libraries must be splitted')
+            ->addOption('branch', '-b', InputOption::VALUE_IS_ARRAY | InputOption::VALUE_REQUIRED, 'List of the Git branch names to be splitted, all branches if no branch is specified (used if all option is not used')
             ->addOption('scratch', '-S', InputOption::VALUE_NONE, 'Check if the scratch is allowed. If yes, the split is scratched and the push is forced')
             ->addOption('fetch', '-F', InputOption::VALUE_NONE, 'Check if fetch of main repository must be run before the split')
             ->addArgument('library', InputArgument::IS_ARRAY | InputArgument::OPTIONAL, 'List of the library paths to be splitted, all configured paths if any path is specified')
@@ -169,9 +170,12 @@ class SplitCommand extends BaseCommand
         $spitter = $this->getReleaser()->getSplitter();
         $fetch = $input->getOption('scratch');
         $allowScratch = $input->getOption('scratch');
+        $allLibraries = $input->getOption('all-lib');
 
         foreach ($this->branches as $branch) {
-            $libraryPaths = GitUtil::getLibraries($this->libraries, $branch, $this->depth);
+            $libraryPaths = $allLibraries
+                ? array_keys($this->libraries)
+                : GitUtil::getLibraries($this->libraries, $branch, $this->depth);
 
             if (empty($libraryPaths)) {
                 $io->write(sprintf('[<info>%s</info>] <info>No library to split</info>', $branch));
