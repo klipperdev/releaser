@@ -14,6 +14,7 @@ namespace Klipper\Tool\Releaser\Splitter;
 use Klipper\Tool\Releaser\Exception\RuntimeException;
 use Klipper\Tool\Releaser\IO\IOInterface;
 use Klipper\Tool\Releaser\IO\NullIO;
+use Klipper\Tool\Releaser\Splitter\Adapter\LogAdapterInterface;
 use Klipper\Tool\Releaser\Splitter\Adapter\SplitterAdapterInterface;
 use Klipper\Tool\Releaser\Util\BranchUtil;
 use Klipper\Tool\Releaser\Util\LibraryUtil;
@@ -23,14 +24,14 @@ use Symfony\Component\Console\Output\OutputInterface;
 /**
  * @author François Pluchino <francois.pluchino@klipper.dev>
  */
-class Splitter implements SplitterInterface
+class Splitter implements SplitterInterface, LogAdapterInterface
 {
     /**
      * @var SplitterAdapterInterface[]
      */
     private array $adapters = [];
 
-    private ?IOInterface $io;
+    private IOInterface $io;
 
     private ?string $adapter = null;
 
@@ -62,7 +63,7 @@ class Splitter implements SplitterInterface
 
         $this->io->write(sprintf('[<info>%s</info>] Fetch from <comment>%s</comment>', $branch, $remoteBranch));
         ProcessUtil::run(['git', 'fetch', 'origin', $branch]);
-        $this->io->write(sprintf('[<info>%s</info>] Create subtree working branch <comment>%s</comment>', $branch, $subTreeBranch));
+        $this->io->write(sprintf('[<info>%s</info>] Create subtree working branch <comment>%s</comment>', $branch, $subTreeBranch), true, OutputInterface::VERBOSITY_VERBOSE);
         ProcessUtil::run(['git', 'checkout', '-B', $subTreeBranch, $remoteBranch]);
     }
 
@@ -71,7 +72,7 @@ class Splitter implements SplitterInterface
         $remoteBranch = $remote.'/'.$branch;
         $subTreeBranch = BranchUtil::getSubTreeBranchName($branch);
 
-        $this->io->write(sprintf('[<info>%s</info>] Clean subtree working branch <comment>%s</comment>', $branch, $subTreeBranch));
+        $this->io->write(sprintf('[<info>%s</info>] Clean subtree working branch <comment>%s</comment>', $branch, $subTreeBranch), true, OutputInterface::VERBOSITY_VERBOSE);
         ProcessUtil::run(['git', 'checkout', '-B', $branch, $remoteBranch], false);
         ProcessUtil::run(['git', 'branch', '-D', $subTreeBranch], false);
     }
@@ -85,37 +86,50 @@ class Splitter implements SplitterInterface
 
         $this->io->write(
             sprintf('[<info>%s</info>][<info>%s</info>] Library splitting in progress...', $branch, $libraryPath),
-            $this->io->isVerbose()
+            $this->io->isVeryVerbose()
         );
 
         try {
             // Add remote identified of library
+            $this->logSplit($branch, $libraryPath, 'Adding the remote repository of the library...');
             ProcessUtil::run(['git', 'remote', 'add', $libraryRemote, $libraryUrl], false);
             // Split the library
-            $this->getAdapter()->split($branch, $subTreeBranch, $libraryPath, $libraryRemote);
+            $this->getAdapter()->split($this, $branch, $subTreeBranch, $libraryPath, $libraryRemote);
             // Push to the Git repository of library
+            $this->logSplit($branch, $libraryPath, 'Pushing to the remote repository...');
             ProcessUtil::run(['git', 'push', '--follow-tags', '--tags', $libraryRemote, $libraryBranch.':'.$branch]);
+
+            $this->cleanLibraryWorkingBranch($branch, $libraryPath, $libraryBranch, $libraryRemote);
 
             $this->io->overwrite(
                 sprintf('[<info>%s</info>][<info>%s</info>] Library splitting success', $branch, $libraryPath)
             );
         } catch (\Throwable $e) {
             $success = false;
+            $this->cleanLibraryWorkingBranch($branch, $libraryPath, $libraryBranch, $libraryRemote);
             $this->io->overwriteError(
                 sprintf('[<info>%s</info>][<info>%s</info>] <error>Library splitting error: %s</error>', $branch, $libraryPath, $e->getMessage())
             );
         }
 
-        // Clean the working branches
+        return $success;
+    }
+
+    public function logSplit(string $branch, string $libraryPath, string $message, int $verbosity = OutputInterface::VERBOSITY_NORMAL): void
+    {
         $this->io->overwrite(
-            sprintf('[<info>%s</info>][<info>%s</info>] Clean library subtree working branch and remote', $branch, $libraryPath),
-            true,
-            OutputInterface::VERBOSITY_VERBOSE
+            sprintf('[<info>%s</info>][<info>%s</info>] Library splitting in progress: %s', $branch, $libraryPath, $message),
+            $this->io->isVeryVerbose(),
+            null,
+            $verbosity
         );
+    }
+
+    private function cleanLibraryWorkingBranch(string $branch, string $libraryPath, string $libraryBranch, string $libraryRemote): void
+    {
+        $this->logSplit($branch, $libraryPath, 'Clean working branch and remote...');
         ProcessUtil::run(['git', 'branch', '-D', $libraryBranch], false);
         ProcessUtil::run(['git', 'remote', 'rm', $libraryRemote], false);
-
-        return $success;
     }
 
     private function getAdapter(): SplitterAdapterInterface

@@ -11,14 +11,12 @@
 
 namespace Klipper\Tool\Releaser\Splitter\Adapter;
 
+use Symfony\Component\Console\Output\OutputInterface;
+
 /**
  * @author François Pluchino <francois.pluchino@klipper.dev>
  */
-interface SplitterAdapterInterface
+interface LogAdapterInterface
 {
-    public function getName(): string;
-
-    public function isAvailable(): bool;
-
-    public function split(LogAdapterInterface $log, string $branch, string $subTreeBranch, string $libraryPath, string $libraryRemote): void;
+    public function logSplit(string $branch, string $libraryPath, string $message, int $verbosity = OutputInterface::VERBOSITY_NORMAL): void;
 }
