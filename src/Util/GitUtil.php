@@ -35,7 +35,9 @@ class GitUtil
 
     public static function validateVersion(): void
     {
-        if (!Semver::satisfies(static::getVersion(), static::REQUIRED_VERSION)) {
+        $version = static::getVersion();
+
+        if (empty($version) || !Semver::satisfies($version, static::REQUIRED_VERSION)) {
             throw new RuntimeException(sprintf(
                 'Git must be installed and this tool requires the "%s" version',
                 static::REQUIRED_VERSION

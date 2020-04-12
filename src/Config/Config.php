@@ -25,6 +25,7 @@ class Config
         'branch-pattern' => BranchUtil::SPLITTABLE_PATTERN,
         'branches' => [],
         'libraries' => [],
+        'binaries' => [],
     ];
 
     private array $config;

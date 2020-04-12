@@ -40,7 +40,8 @@ class ConfigCommand extends BaseCommand
             ->setName('config')
             ->setDescription('Set the config options')
             ->setDefinition([
-                new InputOption('global', 'g', InputOption::VALUE_NONE, 'Apply command to the global config file'),
+                new InputOption('global', 'G', InputOption::VALUE_NONE, 'Apply command to the global config file'),
+                new InputOption('global-repo', 'g', InputOption::VALUE_NONE, 'Apply command to the global repository config file'),
                 new InputOption('editor', 'e', InputOption::VALUE_NONE, 'Open the config with an editor'),
                 new InputOption('unset', null, InputOption::VALUE_NONE, 'Unset the given setting-key'),
                 new InputOption('list', 'l', InputOption::VALUE_NONE, 'List configuration settings'),
@@ -50,7 +51,8 @@ class ConfigCommand extends BaseCommand
             ->setHelp(
                 <<<'EOT'
                     This command allows you to edit the Releaser config settings
-                    in either the local config file or the global config file.
+                    in either the local config file or the global config file
+                    or the global config file for each repository.
 
                     To set a config setting:
 
@@ -65,6 +67,10 @@ class ConfigCommand extends BaseCommand
 
                         <comment>%command.full_name% --global</comment>
 
+                    To edit the global repository config.json:
+
+                        <comment>%command.full_name% --global-repo</comment>
+
                     To add a library (lib is a short alias for libraries):
 
                         <comment>%command.full_name% libraries src/Library1 git@github.com:username/repository-library1.git</comment>
@@ -72,6 +78,14 @@ class ConfigCommand extends BaseCommand
                     To remove a library (lib is a short alias for libraries):
 
                         <comment>%command.full_name% --unset libraries src/Library1</comment>
+
+                    To add a custom binary (bin is a short alias for binaries):
+
+                        <comment>%command.full_name% binaries --global git /path/to/custom/git/binary</comment>
+
+                    To remove a custom binary (bin is a short alias for binaries):
+
+                        <comment>%command.full_name% --global --unset binaries git</comment>
                     EOT
             )
         ;
@@ -81,14 +95,27 @@ class ConfigCommand extends BaseCommand
     {
         parent::initialize($input, $output);
 
-        if ($input->getOption('global') && null !== $input->getOption('config')) {
+        $global = $input->getOption('global');
+        $globalRepo = $input->getOption('global-repo');
+
+        if ($global && null !== $input->getOption('config')) {
             throw new RuntimeException('The options "--config" and "--global" cannot be combined');
+        }
+
+        if ($globalRepo && null !== $input->getOption('config')) {
+            throw new RuntimeException('The options "--config" and "--global-repo" cannot be combined');
+        }
+
+        if ($global && $globalRepo) {
+            throw new RuntimeException('The options "--global" and "--global-repo" cannot be combined');
         }
 
         $io = $this->getIO();
         $this->config = Factory::createConfig($io);
 
-        if ($input->getOption('global')) {
+        if ($global) {
+            $configFile = sprintf('%s/config.json', $this->config->get('home'));
+        } elseif ($globalRepo) {
             $uniqueKey = GitUtil::getUniqueKey();
 
             if (null === $uniqueKey) {
@@ -113,7 +140,7 @@ class ConfigCommand extends BaseCommand
             return 0;
         }
 
-        if (!$input->getOption('global') && $this->configFile->exists()) {
+        if (!$input->getOption('global') && !$input->getOption('global-repo') && $this->configFile->exists()) {
             $this->config->merge($this->configFile->read());
         }
 
@@ -175,6 +202,20 @@ class ConfigCommand extends BaseCommand
                     }
 
                     $this->configSource->addLibrary($settingValues[0], $settingValues[1]);
+                }
+
+                break;
+            case 'bin':
+            case 'binary':
+            case 'binaries':
+                if ($unset) {
+                    $this->configSource->removeBinary($settingValues[0]);
+                } else {
+                    if (2 !== \count($settingValues)) {
+                        throw new RuntimeException('Invalid value to add custom binary. You must define the default binary name and the custom binary path like "config binary git <git-bin-custom-path>"');
+                    }
+
+                    $this->configSource->addBinary($settingValues[0], $settingValues[1]);
                 }
 
                 break;

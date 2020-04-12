@@ -50,13 +50,14 @@ class SplitCommand extends BaseCommand
 
     protected function initialize(InputInterface $input, OutputInterface $output): void
     {
+        $splitter = $this->getReleaser()->getSplitter();
+
         GitUtil::validateVersion();
         $this->initDepth($input);
         $this->initRemote($input);
         $this->initBranches($input);
         $this->initLibraries($input);
 
-        $splitter = $this->getReleaser()->getSplitter();
         $splitter->setAdapter($this->getReleaser()->getConfig()->get('adapter'));
         $this->getIO()->write(
             sprintf('Splitter adapter used: <info>%s</info>', $splitter->getAdapter()->getName()),

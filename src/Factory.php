@@ -22,6 +22,7 @@ use Klipper\Tool\Releaser\Splitter\Adapter\GitSubtreeAdapter;
 use Klipper\Tool\Releaser\Splitter\Adapter\SplitshLiteAdapter;
 use Klipper\Tool\Releaser\Splitter\Splitter;
 use Klipper\Tool\Releaser\Util\GitUtil;
+use Klipper\Tool\Releaser\Util\ProcessUtil;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
@@ -68,19 +69,13 @@ class Factory
         ]);
 
         // load global config
+        $file = new JsonFile(sprintf('%s/config.json', $config->get('home')));
+        static::loadConfig($config, $file, $io);
+        ProcessUtil::$replaceBinaries = array_merge(ProcessUtil::$replaceBinaries, $config->get('binaries', []));
+
+        // load global repository config
         $file = new JsonFile(sprintf('%s/%s.json', $config->get('data-dir'), GitUtil::getUniqueKey()));
-
-        if ($file->exists()) {
-            if (null !== $io && $io->isDebug()) {
-                $io->write(sprintf('Loading config file "%s"', $file->getPath()));
-            }
-
-            try {
-                $config->merge($file->read());
-            } catch (\Throwable $e) {
-                $io->writeError(sprintf('<error>Error to load config file "%s": %s', $file->getPath(), $e->getMessage()));
-            }
-        }
+        static::loadConfig($config, $file, $io);
 
         $config->setConfigSource(new JsonConfigSource($file));
 
@@ -150,5 +145,20 @@ class Factory
     public static function getReleaserFile(): string
     {
         return trim(getenv('KLIPPER_RELEASER')) ?: './.klipperReleaser.json';
+    }
+
+    private static function loadConfig(Config $config, JsonFile $file, ?IOInterface $io): void
+    {
+        if ($file->exists()) {
+            if (null !== $io && $io->isDebug()) {
+                $io->write(sprintf('Loading config file "%s"', $file->getPath()));
+            }
+
+            try {
+                $config->merge($file->read());
+            } catch (\Throwable $e) {
+                $io->writeError(sprintf('<error>Error to load config file "%s": %s', $file->getPath(), $e->getMessage()));
+            }
+        }
     }
 }

@@ -46,6 +46,16 @@
                     "description": "The clone URL of the GIT repository"
                 }
             }
+        },
+        "binaries": {
+            "type": "object",
+            "description": "The map between the default binaries used and the custom path of binary",
+            "patternProperties": {
+                ".+": {
+                    "type": "string",
+                    "description": "The custom path of the binary"
+                }
+            }
         }
     }
 }

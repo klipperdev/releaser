@@ -97,6 +97,26 @@ class JsonConfigSource implements ConfigSourceInterface
         $this->saveJson($config);
     }
 
+    /**
+     * @throws \Throwable
+     */
+    public function addBinary(string $binary, string $pathReplacement): void
+    {
+        $config = $this->readJson();
+        $config['binaries'][$binary] = $pathReplacement;
+        $this->saveJson($config);
+    }
+
+    /**
+     * @throws \Throwable
+     */
+    public function removeBinary(string $binary): void
+    {
+        $config = $this->readJson();
+        unset($config['binaries'][$binary]);
+        $this->saveJson($config);
+    }
+
     protected function readJson(): array
     {
         if ($this->file->exists()) {

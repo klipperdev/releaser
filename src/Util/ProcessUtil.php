@@ -21,9 +21,15 @@ class ProcessUtil
 {
     public static string $processClass = Process::class;
 
+    public static array $replaceBinaries = [];
+
     public static function create(array $command, ?string $cwd = null, array $env = null, $input = null, ?float $timeout = 60): Process
     {
         $class = static::$processClass;
+
+        if (isset($command[0], static::$replaceBinaries[$command[0]]) && !empty(static::$replaceBinaries[$command[0]])) {
+            $command[0] = static::$replaceBinaries[$command[0]];
+        }
 
         return new $class($command, $cwd, $env, $input, $timeout);
     }

@@ -32,4 +32,8 @@ interface ConfigSourceInterface
     public function addLibrary(string $path, string $url): void;
 
     public function removeLibrary(string $path): void;
+
+    public function addBinary(string $binary, string $pathReplacement): void;
+
+    public function removeBinary(string $binary): void;
 }
