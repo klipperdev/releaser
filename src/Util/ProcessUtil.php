@@ -19,9 +19,26 @@ use Symfony\Component\Process\Process;
  */
 class ProcessUtil
 {
-    public static function run(Process $process, bool $thrownException = true): Process
+    public static string $processClass = Process::class;
+
+    public static function create(array $command, ?string $cwd = null, array $env = null, $input = null, ?float $timeout = 60): Process
     {
-        $process->setTimeout(0)->run();
+        $class = static::$processClass;
+
+        return new $class($command, $cwd, $env, $input, $timeout);
+    }
+
+    /**
+     * @param Process|array $process The process instance or the command
+     */
+    public static function run($process, bool $thrownException = true): Process
+    {
+        if (!$process instanceof Process) {
+            $process = static::create((array) $process);
+            $process->setTimeout(0);
+        }
+
+        $process->run();
 
         if ($thrownException && !$process->isSuccessful()) {
             throw new ProcessFailedException($process);
@@ -32,7 +49,7 @@ class ProcessUtil
 
     public static function runSingleResult(array $command): ?string
     {
-        $p = new Process($command);
+        $p = static::create($command);
         $p->run();
 
         return trim($p->getOutput()) ?: null;
@@ -43,7 +60,7 @@ class ProcessUtil
      */
     public static function runArrayResult(array $command): iterable
     {
-        $p = new Process($command);
+        $p = static::create($command);
         $p->run();
 
         return self::explodeResult($p);

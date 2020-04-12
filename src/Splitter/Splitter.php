@@ -19,7 +19,6 @@ use Klipper\Tool\Releaser\Util\BranchUtil;
 use Klipper\Tool\Releaser\Util\LibraryUtil;
 use Klipper\Tool\Releaser\Util\ProcessUtil;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Process\Process;
 
 /**
  * @author François Pluchino <francois.pluchino@klipper.dev>
@@ -62,9 +61,9 @@ class Splitter implements SplitterInterface
         $subTreeBranch = BranchUtil::getSubTreeBranchName($branch);
 
         $this->io->write(sprintf('[<info>%s</info>] Fetch from <comment>%s</comment>', $branch, $remoteBranch));
-        ProcessUtil::run(new Process(['git', 'fetch', 'origin', $branch]));
+        ProcessUtil::run(['git', 'fetch', 'origin', $branch]);
         $this->io->write(sprintf('[<info>%s</info>] Create subtree working branch <comment>%s</comment>', $branch, $subTreeBranch));
-        ProcessUtil::run(new Process(['git', 'checkout', '-B', $subTreeBranch, $remoteBranch]));
+        ProcessUtil::run(['git', 'checkout', '-B', $subTreeBranch, $remoteBranch]);
     }
 
     public function terminate(string $remote, string $branch): void
@@ -73,8 +72,8 @@ class Splitter implements SplitterInterface
         $subTreeBranch = BranchUtil::getSubTreeBranchName($branch);
 
         $this->io->write(sprintf('[<info>%s</info>] Clean subtree working branch <comment>%s</comment>', $branch, $subTreeBranch));
-        ProcessUtil::run(new Process(['git', 'checkout', '-B', $branch, $remoteBranch]), false);
-        ProcessUtil::run(new Process(['git', 'branch', '-D', $subTreeBranch]), false);
+        ProcessUtil::run(['git', 'checkout', '-B', $branch, $remoteBranch], false);
+        ProcessUtil::run(['git', 'branch', '-D', $subTreeBranch], false);
     }
 
     public function split(string $branch, string $libraryPath, string $libraryRemote): bool
@@ -105,8 +104,8 @@ class Splitter implements SplitterInterface
             true,
             OutputInterface::VERBOSITY_VERBOSE
         );
-        ProcessUtil::run(new Process(['git', 'branch', '-D', LibraryUtil::getBranchName($subTreeBranch, $libraryPath)]), false);
-        ProcessUtil::run(new Process(['git', 'remote', 'rm', LibraryUtil::getRemoteName($libraryPath)]), false);
+        ProcessUtil::run(['git', 'branch', '-D', LibraryUtil::getBranchName($subTreeBranch, $libraryPath)], false);
+        ProcessUtil::run(['git', 'remote', 'rm', LibraryUtil::getRemoteName($libraryPath)], false);
 
         return $success;
     }
@@ -117,13 +116,13 @@ class Splitter implements SplitterInterface
         $libraryRemote = LibraryUtil::getRemoteName($libraryPath);
 
         // Add remote identified of library
-        ProcessUtil::run(new Process(['git', 'remote', 'add', $libraryRemote, $libraryRemoteUrl]), false);
+        ProcessUtil::run(['git', 'remote', 'add', $libraryRemote, $libraryRemoteUrl], false);
 
         // Split the library
         $this->getAdapter()->split($branch, $subTreeBranch, $libraryPath, $libraryBranch);
 
         // Push to the Git repository of library
-        ProcessUtil::run(new Process(['git', 'push', '--follow-tags', '--tags', $libraryRemote, sprintf('%s:%s', $subTreeBranch, $branch)]));
+        ProcessUtil::run(['git', 'push', '--follow-tags', '--tags', $libraryRemote, sprintf('%s:%s', $subTreeBranch, $branch)]);
     }
 
     private function getAdapter(): SplitterAdapterInterface

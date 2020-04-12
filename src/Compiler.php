@@ -13,10 +13,10 @@ namespace Klipper\Tool\Releaser;
 
 use Klipper\Tool\Releaser\Exception\RuntimeException;
 use Klipper\Tool\Releaser\Json\Json;
+use Klipper\Tool\Releaser\Util\ProcessUtil;
 use Seld\PharUtils\Linter;
 use Seld\PharUtils\Timestamps;
 use Symfony\Component\Finder\Finder;
-use Symfony\Component\Process\Process;
 
 /**
  * @author François Pluchino <francois.pluchino@klipper.dev>
@@ -131,7 +131,7 @@ class Compiler
 
     private function getVersion(): string
     {
-        $process = new Process(['git', 'log', '--pretty="%H"', '-n1', 'HEAD'], __DIR__);
+        $process = ProcessUtil::create(['git', 'log', '--pretty="%H"', '-n1', 'HEAD'], __DIR__);
 
         if (0 !== $process->run()) {
             throw new RuntimeException('Can\'t run git log. You must ensure to run compile from composer git repository clone and that git binary is available.');
@@ -145,7 +145,7 @@ class Compiler
      */
     private function getVersionDate(): \DateTime
     {
-        $process = new Process(['git', 'log', '-n1', '--pretty=%ci', 'HEAD'], __DIR__);
+        $process = ProcessUtil::create(['git', 'log', '-n1', '--pretty=%ci', 'HEAD'], __DIR__);
 
         if (0 !== $process->run()) {
             throw new RuntimeException('Can\'t run git log. You must ensure to run compile from releaser git repository clone and that git binary is available.');
@@ -159,7 +159,7 @@ class Compiler
 
     private function getBranchAliasVersion(): string
     {
-        $process = new Process(['git', 'describe', '--tags', '--exact-match', 'HEAD']);
+        $process = ProcessUtil::create(['git', 'describe', '--tags', '--exact-match', 'HEAD']);
         $branchAliasVersion = '';
 
         if (0 === $process->run()) {
