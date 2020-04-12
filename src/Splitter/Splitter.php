@@ -96,7 +96,7 @@ class Splitter implements SplitterInterface, LogAdapterInterface
         ProcessUtil::run(['git', 'branch', '-D', $subTreeBranch], false);
     }
 
-    public function split(string $branch, string $libraryPath, string $libraryUrl): bool
+    public function split(string $branch, string $libraryPath, string $libraryUrl, bool $allowScratch = true): bool
     {
         $success = true;
         $subTreeBranch = BranchUtil::getSubTreeBranchName($branch);
@@ -112,12 +112,24 @@ class Splitter implements SplitterInterface, LogAdapterInterface
             // Add remote identified of library
             $this->logSplit($branch, $libraryPath, 'Adding the remote repository of the library...');
             ProcessUtil::run(['git', 'remote', 'add', $libraryRemote, $libraryUrl], false);
+
             // Split the library
-            $this->getAdapter()->split($this, $branch, $subTreeBranch, $libraryPath, $libraryRemote);
+            $scratched = $this->getAdapter()->split($this, $branch, $subTreeBranch, $libraryPath, $libraryRemote, $allowScratch);
+
             // Push to the Git repository of library
             $this->logSplit($branch, $libraryPath, 'Pushing to the remote repository...');
-            ProcessUtil::run(['git', 'push', '--follow-tags', '--tags', $libraryRemote, $libraryBranch.':'.$branch]);
 
+            try {
+                $this->pushLibraryRepository($branch, $libraryBranch, $libraryRemote, $scratched);
+            } catch (\Throwable $e) {
+                if (!$allowScratch || $scratched) {
+                    throw $e;
+                }
+
+                $this->pushLibraryRepository($branch, $libraryBranch, $libraryRemote, true);
+            }
+
+            // Clean library working directory
             $this->cleanLibraryWorkingBranch($branch, $libraryPath, $libraryBranch, $libraryRemote);
 
             $this->io->overwrite(
@@ -142,6 +154,12 @@ class Splitter implements SplitterInterface, LogAdapterInterface
             null,
             $verbosity
         );
+    }
+
+    private function pushLibraryRepository(string $branch, string $libraryBranch, string $libraryRemote, bool $force = false): void
+    {
+        $pushOptions = $force ? ['--force'] : [];
+        ProcessUtil::run(['git', 'push', '--follow-tags', '--tags', $libraryRemote, $libraryBranch.':'.$branch, ...$pushOptions]);
     }
 
     private function cleanLibraryWorkingBranch(string $branch, string $libraryPath, string $libraryBranch, string $libraryRemote): void

@@ -41,6 +41,7 @@ class SplitCommand extends BaseCommand
             ->addOption('remote', '-R', InputOption::VALUE_REQUIRED, 'Remote name of GIT repository, by default, the first remote is selected')
             ->addOption('all', '-A', InputOption::VALUE_NONE, 'Check if all branches must be splitted')
             ->addOption('branch', '-b', InputOption::VALUE_IS_ARRAY | InputOption::VALUE_REQUIRED, 'List of the Git branch names to be splitted, all branches if no branch is specified')
+            ->addOption('scratch', '-S', InputOption::VALUE_NONE, 'Check if the scratch is allowed. If yes, the split is scratched and the push is forced')
             ->addArgument('library', InputArgument::IS_ARRAY | InputArgument::OPTIONAL, 'List of the library paths to be splitted, all configured paths if any path is specified')
         ;
     }
@@ -165,6 +166,7 @@ class SplitCommand extends BaseCommand
         $io = $this->getIO();
         $success = true;
         $spitter = $this->getReleaser()->getSplitter();
+        $allowScratch = $input->getOption('scratch');
 
         foreach ($this->branches as $branch) {
             $libraryPaths = GitUtil::getLibraries($this->libraries, $branch, $this->depth);
@@ -176,7 +178,7 @@ class SplitCommand extends BaseCommand
             }
 
             foreach ($libraryPaths as $libraryPath) {
-                $success = $spitter->split($branch, $libraryPath, $this->libraries[$libraryPath])
+                $success = $spitter->split($branch, $libraryPath, $this->libraries[$libraryPath], $allowScratch)
                     && $success;
             }
 

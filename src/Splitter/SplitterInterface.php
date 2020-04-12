@@ -30,5 +30,5 @@ interface SplitterInterface
 
     public function terminate(string $remote, string $branch): void;
 
-    public function split(string $branch, string $libraryPath, string $libraryUrl): bool;
+    public function split(string $branch, string $libraryPath, string $libraryUrl, bool $allowScratch = true): bool;
 }

@@ -20,5 +20,8 @@ interface SplitterAdapterInterface
 
     public function isAvailable(): bool;
 
-    public function split(LogAdapterInterface $log, string $branch, string $subTreeBranch, string $libraryPath, string $libraryRemote): void;
+    /**
+     * @throws \Throwable
+     */
+    public function split(LogAdapterInterface $log, string $branch, string $subTreeBranch, string $libraryPath, string $libraryRemote, bool $allowScratch = true): bool;
 }
