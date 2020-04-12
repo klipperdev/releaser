@@ -168,7 +168,7 @@ class SplitCommand extends BaseCommand
         $io = $this->getIO();
         $success = true;
         $spitter = $this->getReleaser()->getSplitter();
-        $fetch = $input->getOption('scratch');
+        $fetch = $input->getOption('fetch');
         $allowScratch = $input->getOption('scratch');
         $allLibraries = $input->getOption('all-lib');
 
