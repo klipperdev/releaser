@@ -52,7 +52,14 @@ class SplitCommand extends BaseCommand
         $this->initRemote($input);
         $this->initBranches($input);
         $this->initLibraries($input);
-        $this->getReleaser()->getSplitter()->setAdapter($this->getReleaser()->getConfig()->get('adapter'));
+
+        $splitter = $this->getReleaser()->getSplitter();
+        $splitter->setAdapter($this->getReleaser()->getConfig()->get('adapter'));
+        $this->getIO()->write(
+            sprintf('Splitter adapter used: <info>%s</info>', $splitter->getAdapter()->getName()),
+            true,
+            OutputInterface::VERBOSITY_VERBOSE
+        );
     }
 
     protected function initDepth(InputInterface $input): void

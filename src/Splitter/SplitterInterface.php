@@ -11,12 +11,20 @@
 
 namespace Klipper\Tool\Releaser\Splitter;
 
+use Klipper\Tool\Releaser\Exception\RuntimeException;
+use Klipper\Tool\Releaser\Splitter\Adapter\SplitterAdapterInterface;
+
 /**
  * @author François Pluchino <francois.pluchino@klipper.dev>
  */
 interface SplitterInterface
 {
     public function setAdapter(?string $name): void;
+
+    /**
+     * @throws RuntimeException When no adapter is found
+     */
+    public function getAdapter(): SplitterAdapterInterface;
 
     public function prepare(string $remote, string $branch): void;
 

@@ -56,6 +56,23 @@ class Splitter implements SplitterInterface, LogAdapterInterface
         $this->adapter = $name;
     }
 
+    public function getAdapter(): SplitterAdapterInterface
+    {
+        if (isset($this->adapters[$this->adapter])) {
+            return $this->adapters[$this->adapter];
+        }
+
+        foreach ($this->adapters as $adapter) {
+            if ($adapter->isAvailable()) {
+                $this->adapter = $adapter->getName();
+
+                return $adapter;
+            }
+        }
+
+        throw new RuntimeException('No adapter for splitter is found');
+    }
+
     public function prepare(string $remote, string $branch): void
     {
         $remoteBranch = $remote.'/'.$branch;
@@ -130,22 +147,5 @@ class Splitter implements SplitterInterface, LogAdapterInterface
         $this->logSplit($branch, $libraryPath, 'Clean working branch and remote...');
         ProcessUtil::run(['git', 'branch', '-D', $libraryBranch], false);
         ProcessUtil::run(['git', 'remote', 'rm', $libraryRemote], false);
-    }
-
-    private function getAdapter(): SplitterAdapterInterface
-    {
-        if (isset($this->adapters[$this->adapter])) {
-            return $this->adapters[$this->adapter];
-        }
-
-        foreach ($this->adapters as $adapter) {
-            if ($adapter->isAvailable()) {
-                $this->adapter = $adapter->getName();
-
-                return $adapter;
-            }
-        }
-
-        throw new RuntimeException('No adapter for splitter is found');
     }
 }
