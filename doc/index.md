@@ -35,3 +35,9 @@ Follow the steps to install the tool:
   php "%~dp0releaser.phar" %*
   ```
 - Add the Releaser install directory in the `Path` system environment variable
+
+## Next step
+
+You can read how to:
+
+- [Configure this tool](config.md)
