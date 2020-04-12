@@ -18,6 +18,7 @@ use Klipper\Tool\Releaser\Exception\JsonValidationException;
 use Klipper\Tool\Releaser\Exception\RuntimeException;
 use Klipper\Tool\Releaser\IO\IOInterface;
 use Klipper\Tool\Releaser\Json\JsonFile;
+use Klipper\Tool\Releaser\Splitter\Adapter\GitSubtreeAdapter;
 use Klipper\Tool\Releaser\Splitter\Splitter;
 use Klipper\Tool\Releaser\Util\GitUtil;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -126,6 +127,7 @@ class Factory
             $config,
             new Splitter(
                 [
+                    new GitSubtreeAdapter(),
                 ],
                 $io
             )
