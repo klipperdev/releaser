@@ -4,6 +4,25 @@
     "type": "object",
     "additionalProperties": false,
     "properties": {
+        "home": {
+            "type": "string",
+            "description": "The home directory",
+            "default": "."
+        },
+        "data-dir": {
+            "type": "string",
+            "description": "The data directory",
+            "default": "{home}/configs"
+        },
+        "adapter": {
+            "type": "string",
+            "description": "The adapter name for the splitter",
+            "default": "auto",
+            "enum": [
+                "auto",
+                "git-subtree"
+            ]
+        },
         "branch-pattern": {
             "type": "string",
             "description": "The pattern to find the branches that must be splitted if no branch is defined in the config",
