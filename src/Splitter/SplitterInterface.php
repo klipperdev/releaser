@@ -26,7 +26,7 @@ interface SplitterInterface
      */
     public function getAdapter(): SplitterAdapterInterface;
 
-    public function prepare(string $remote, string $branch): void;
+    public function prepare(string $remote, string $branch, bool $fetch = true): void;
 
     public function terminate(string $remote, string $branch): void;
 

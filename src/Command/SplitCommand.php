@@ -42,6 +42,7 @@ class SplitCommand extends BaseCommand
             ->addOption('all', '-A', InputOption::VALUE_NONE, 'Check if all branches must be splitted')
             ->addOption('branch', '-b', InputOption::VALUE_IS_ARRAY | InputOption::VALUE_REQUIRED, 'List of the Git branch names to be splitted, all branches if no branch is specified')
             ->addOption('scratch', '-S', InputOption::VALUE_NONE, 'Check if the scratch is allowed. If yes, the split is scratched and the push is forced')
+            ->addOption('fetch', '-F', InputOption::VALUE_NONE, 'Check if fetch of main repository must be run before the split')
             ->addArgument('library', InputArgument::IS_ARRAY | InputArgument::OPTIONAL, 'List of the library paths to be splitted, all configured paths if any path is specified')
         ;
     }
@@ -166,6 +167,7 @@ class SplitCommand extends BaseCommand
         $io = $this->getIO();
         $success = true;
         $spitter = $this->getReleaser()->getSplitter();
+        $fetch = $input->getOption('scratch');
         $allowScratch = $input->getOption('scratch');
 
         foreach ($this->branches as $branch) {
@@ -174,7 +176,7 @@ class SplitCommand extends BaseCommand
             if (empty($libraryPaths)) {
                 $io->write(sprintf('[<info>%s</info>] <info>No library to split</info>', $branch));
             } else {
-                $spitter->prepare($this->remote, $branch);
+                $spitter->prepare($this->remote, $branch, $fetch);
             }
 
             foreach ($libraryPaths as $libraryPath) {

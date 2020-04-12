@@ -51,8 +51,12 @@ class Splitter implements SplitterInterface, LogAdapterInterface
     {
         $name = 'auto' !== $name ? $name : null;
 
-        if (null !== $name && !isset($this->adapter[$name])) {
+        if (null !== $name && !isset($this->adapters[$name])) {
             throw new RuntimeException(sprintf('The "%s" splitter adapter does not exist', $name));
+        }
+
+        if (isset($this->adapters[$name]) && !$this->adapters[$name]->isAvailable()) {
+            throw new RuntimeException(sprintf('The "%s" splitter adapter is not available', $name));
         }
 
         $this->adapter = $name;
@@ -75,13 +79,16 @@ class Splitter implements SplitterInterface, LogAdapterInterface
         throw new RuntimeException('No adapter for splitter is found');
     }
 
-    public function prepare(string $remote, string $branch): void
+    public function prepare(string $remote, string $branch, bool $fetch = true): void
     {
         $remoteBranch = $remote.'/'.$branch;
         $subTreeBranch = BranchUtil::getSubTreeBranchName($branch);
 
-        $this->io->write(sprintf('[<info>%s</info>] Fetch from <comment>%s</comment>', $branch, $remoteBranch));
-        ProcessUtil::run(['git', 'fetch', 'origin', $branch]);
+        if ($fetch) {
+            $this->io->write(sprintf('[<info>%s</info>] Fetch from <comment>%s</comment>', $branch, $remoteBranch));
+            ProcessUtil::run(['git', 'fetch', 'origin', $branch]);
+        }
+
         $this->io->write(sprintf('[<info>%s</info>] Create subtree working branch <comment>%s</comment>', $branch, $subTreeBranch), true, OutputInterface::VERBOSITY_VERBOSE);
         ProcessUtil::run(['git', 'checkout', '-B', $subTreeBranch, $remoteBranch]);
     }
