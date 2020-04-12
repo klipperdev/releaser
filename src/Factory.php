@@ -73,7 +73,11 @@ class Factory
                 $io->write(sprintf('Loading config file "%s"', $file->getPath()));
             }
 
-            $config->merge($file->read());
+            try {
+                $config->merge($file->read());
+            } catch (\Throwable $e) {
+                $io->writeError(sprintf('<error>Error to load config file "%s": %s', $file->getPath(), $e->getMessage()));
+            }
         }
 
         $config->setConfigSource(new JsonConfigSource($file));

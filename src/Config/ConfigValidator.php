@@ -55,7 +55,7 @@ class ConfigValidator
                 preg_match($pattern, $gitUrl, $matches);
 
                 if (empty($matches)) {
-                    $warnings[] = sprintf('The "libraries[%s]" value must contain a valid URL of GIT repository', $path);
+                    $warnings[] = sprintf('libraries [%s] : Value must contain a valid URL of GIT repository', $path);
                 }
             }
         }

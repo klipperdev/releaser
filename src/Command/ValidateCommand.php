@@ -99,7 +99,7 @@ class ValidateCommand extends BaseCommand
 
         foreach ($messages as $style => $styleMessages) {
             foreach ($styleMessages as $styleMessage) {
-                $io->writeError('<'.$style.'>'.$styleMessage.'</'.$style.'>');
+                $io->writeError('<error>'.$styleMessage.'</error>');
             }
         }
     }
