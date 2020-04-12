@@ -29,7 +29,7 @@ class ProcessUtil
     }
 
     /**
-     * @param Process|array $process The process instance or the command
+     * @param array|Process $process The process instance or the command
      */
     public static function run($process, bool $thrownException = true): Process
     {
