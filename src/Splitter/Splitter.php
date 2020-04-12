@@ -76,10 +76,12 @@ class Splitter implements SplitterInterface
         ProcessUtil::run(['git', 'branch', '-D', $subTreeBranch], false);
     }
 
-    public function split(string $branch, string $libraryPath, string $libraryRemote): bool
+    public function split(string $branch, string $libraryPath, string $libraryUrl): bool
     {
         $success = true;
         $subTreeBranch = BranchUtil::getSubTreeBranchName($branch);
+        $libraryBranch = LibraryUtil::getBranchName($subTreeBranch, $libraryPath);
+        $libraryRemote = LibraryUtil::getRemoteName($libraryPath);
 
         $this->io->write(
             sprintf('[<info>%s</info>][<info>%s</info>] Library splitting in progress...', $branch, $libraryPath),
@@ -87,7 +89,13 @@ class Splitter implements SplitterInterface
         );
 
         try {
-            $this->splitLibrary($branch, $subTreeBranch, $libraryPath, $libraryRemote);
+            // Add remote identified of library
+            ProcessUtil::run(['git', 'remote', 'add', $libraryRemote, $libraryUrl], false);
+            // Split the library
+            $this->getAdapter()->split($branch, $subTreeBranch, $libraryPath, $libraryRemote);
+            // Push to the Git repository of library
+            ProcessUtil::run(['git', 'push', '--follow-tags', '--tags', $libraryRemote, $libraryBranch.':'.$branch]);
+
             $this->io->overwrite(
                 sprintf('[<info>%s</info>][<info>%s</info>] Library splitting success', $branch, $libraryPath)
             );
@@ -104,25 +112,10 @@ class Splitter implements SplitterInterface
             true,
             OutputInterface::VERBOSITY_VERBOSE
         );
-        ProcessUtil::run(['git', 'branch', '-D', LibraryUtil::getBranchName($subTreeBranch, $libraryPath)], false);
-        ProcessUtil::run(['git', 'remote', 'rm', LibraryUtil::getRemoteName($libraryPath)], false);
+        ProcessUtil::run(['git', 'branch', '-D', $libraryBranch], false);
+        ProcessUtil::run(['git', 'remote', 'rm', $libraryRemote], false);
 
         return $success;
-    }
-
-    protected function splitLibrary(string $branch, string $subTreeBranch, string $libraryPath, string $libraryRemoteUrl): void
-    {
-        $libraryBranch = LibraryUtil::getBranchName($subTreeBranch, $libraryPath);
-        $libraryRemote = LibraryUtil::getRemoteName($libraryPath);
-
-        // Add remote identified of library
-        ProcessUtil::run(['git', 'remote', 'add', $libraryRemote, $libraryRemoteUrl], false);
-
-        // Split the library
-        $this->getAdapter()->split($branch, $subTreeBranch, $libraryPath, $libraryBranch);
-
-        // Push to the Git repository of library
-        ProcessUtil::run(['git', 'push', '--follow-tags', '--tags', $libraryRemote, sprintf('%s:%s', $subTreeBranch, $branch)]);
     }
 
     private function getAdapter(): SplitterAdapterInterface

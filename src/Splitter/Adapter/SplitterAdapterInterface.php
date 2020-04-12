@@ -20,5 +20,5 @@ interface SplitterAdapterInterface
 
     public function isAvailable(): bool;
 
-    public function split(string $branch, string $subTreeBranch, string $libraryPath, string $libraryBranch): void;
+    public function split(string $branch, string $subTreeBranch, string $libraryPath, string $libraryRemote): void;
 }
