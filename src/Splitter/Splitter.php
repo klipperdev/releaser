@@ -86,7 +86,7 @@ class Splitter implements SplitterInterface, LogAdapterInterface
 
         if ($fetch) {
             $this->io->write(sprintf('[<info>%s</info>] Fetch from <comment>%s</comment>', $branch, $remoteBranch));
-            ProcessUtil::run(['git', 'fetch', 'origin', $branch]);
+            ProcessUtil::run(['git', 'fetch', '--tags', 'origin', $branch]);
         }
 
         $this->io->write(sprintf('[<info>%s</info>] Create subtree working branch <comment>%s</comment>', $branch, $subTreeBranch), true, OutputInterface::VERBOSITY_VERBOSE);
