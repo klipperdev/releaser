@@ -54,6 +54,16 @@ class ConfigCommand extends BaseCommand
                     in either the local config file or the global config file
                     or the global config file for each repository.
 
+                    It is recommended to use the global config only for keys to be
+                    used by all repositories such as 'home', 'data-dir' or 'binaries'.
+
+                    For other keys, it is recommended to use the global repository config
+                    or the local config.
+
+                    Only the 'binaries' key cannot be added in the global repository config,
+                    because to load the global repository config, this tool call the GIT binary
+                    to retrieve the GIT url so that generate the unique name.
+
                     To set a config setting:
 
                         <comment>%command.full_name% home /path/to/the/custom/home/directory</comment>
