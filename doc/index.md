@@ -41,3 +41,4 @@ Follow the steps to install the tool:
 You can read how to:
 
 - [Configure this tool](config.md)
+- [Use this tool](usage.md)
