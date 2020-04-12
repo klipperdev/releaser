@@ -11,6 +11,8 @@
 
 namespace Klipper\Tool\Releaser\Config;
 
+use Klipper\Tool\Releaser\Util\BranchUtil;
+
 /**
  * @author François Pluchino <francois.pluchino@klipper.dev>
  */
@@ -19,8 +21,9 @@ class Config
     public static array $defaultConfig = [
         'home' => '.',
         'data-dir' => '{home}/configs',
-        'branch-pattern' => null,
-        'adapter' => null,
+        'adapter' => 'auto',
+        'branch-pattern' => BranchUtil::SPLITTABLE_PATTERN,
+        'branches' => [],
         'libraries' => [],
     ];
 

@@ -4,6 +4,19 @@
     "type": "object",
     "additionalProperties": false,
     "properties": {
+        "branch-pattern": {
+            "type": "string",
+            "description": "The pattern to find the branches that must be splitted if no branch is defined in the config",
+            "default": "/^master|(([0-9xX]+\\.?)+)$/i"
+        },
+        "branches": {
+            "type": "array",
+            "description": "The list of the branch names that must be splitted",
+            "items": {
+                "type": "string",
+                "description": "The branch name that must be splitted"
+            }
+        },
         "libraries": {
             "type": "object",
             "description": "The map between the source path of library and the GIT repository URL",

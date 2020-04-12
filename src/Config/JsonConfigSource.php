@@ -56,6 +56,30 @@ class JsonConfigSource implements ConfigSourceInterface
     /**
      * @throws \Throwable
      */
+    public function addBranch(string $branch): void
+    {
+        $config = $this->readJson();
+
+        if (!\in_array($branch, $config['branches'] ?? [], true)) {
+            $config['branches'][] = $branch;
+        }
+
+        $this->saveJson($config);
+    }
+
+    /**
+     * @throws \Throwable
+     */
+    public function removeBranch(string $branch): void
+    {
+        $config = $this->readJson();
+        unset($config['branches'][array_search($branch, $config['branches'] ?? [], true)]);
+        $this->saveJson($config);
+    }
+
+    /**
+     * @throws \Throwable
+     */
     public function addLibrary(string $path, string $url): void
     {
         $config = $this->readJson();

@@ -99,6 +99,8 @@ class SplitCommand extends BaseCommand
         $this->branches = (array) $input->getOption('branch');
         $branchNames = GitUtil::getBranchNames($this->remote);
         $branchPattern = $this->getReleaser()->getConfig()->get('branch-pattern') ?: null;
+        $configBranches = $this->getReleaser()->getConfig()->get('branches', []);
+        $hasDefinedConfigBranches = !empty($configBranches);
 
         if (empty($this->branches) && null !== $currentBranch = GitUtil::getCurrentBranch()) {
             $this->branches[] = $currentBranch;
@@ -110,7 +112,11 @@ class SplitCommand extends BaseCommand
 
         if ($input->getOption('all')) {
             foreach ($branchNames as $branchName) {
-                if (BranchUtil::isSplittable($branchName, $branchPattern)) {
+                if ($hasDefinedConfigBranches) {
+                    if (\in_array($branchName, $configBranches, true)) {
+                        $this->branches[] = $branchName;
+                    }
+                } elseif (BranchUtil::isSplittable($branchName, $branchPattern)) {
                     $this->branches[] = $branchName;
                 }
             }

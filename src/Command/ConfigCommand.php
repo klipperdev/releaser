@@ -137,6 +137,10 @@ class ConfigCommand extends BaseCommand
             $value = $this->config->get($settingKey);
 
             if (\is_array($value)) {
+                if (empty($value)) {
+                    $io->write('<info>[]</info>', true, OutputInterface::VERBOSITY_QUIET);
+                }
+
                 foreach ($value as $key => $val) {
                     $io->write('[<comment>'.$key.'</comment>] <info>'.$this->formatValue($val).'</info>', true, OutputInterface::VERBOSITY_QUIET);
                 }
@@ -149,6 +153,17 @@ class ConfigCommand extends BaseCommand
 
         // edit the value
         switch ($settingKey) {
+            case 'branch':
+            case 'branches':
+                foreach ($settingValues as $settingValue) {
+                    if ($unset) {
+                        $this->configSource->removeBranch($settingValue);
+                    } else {
+                        $this->configSource->addBranch($settingValue);
+                    }
+                }
+
+                break;
             case 'lib':
             case 'library':
             case 'libraries':
@@ -220,6 +235,10 @@ class ConfigCommand extends BaseCommand
     {
         $io = $this->getIO();
         $keys = array_keys($contents);
+
+        if (empty($keys) && null !== $k) {
+            $io->write('[<comment>'.implode('</comment>].[<comment>', explode('.', rtrim($k, '.'))).'</comment>] <info>[]</info>', true, OutputInterface::VERBOSITY_QUIET);
+        }
 
         foreach ($keys as $key) {
             $value = $this->config->get($k.$key);

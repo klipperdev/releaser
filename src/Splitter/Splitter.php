@@ -49,6 +49,8 @@ class Splitter implements SplitterInterface, LogAdapterInterface
 
     public function setAdapter(?string $name): void
     {
+        $name = 'auto' !== $name ? $name : null;
+
         if (null !== $name && !isset($this->adapter[$name])) {
             throw new RuntimeException(sprintf('The "%s" splitter adapter does not exist', $name));
         }

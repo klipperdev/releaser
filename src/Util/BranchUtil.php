@@ -16,9 +16,11 @@ namespace Klipper\Tool\Releaser\Util;
  */
 class BranchUtil
 {
+    public const SPLITTABLE_PATTERN = '/^master|(([0-9xX]+\.?)+)$/i';
+
     public static function isSplittable(string $branch, ?string $pattern = null): bool
     {
-        $pattern = $pattern ?: '/^master|(([0-9xX]+\.?)+)$/i';
+        $pattern = $pattern ?: static::SPLITTABLE_PATTERN;
 
         return (bool) preg_match($pattern, $branch);
     }

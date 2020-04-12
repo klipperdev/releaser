@@ -18,6 +18,17 @@ interface ConfigSourceInterface
 {
     public function getName(): string;
 
+    /**
+     * @param mixed $value
+     */
+    public function set(string $key, $value): void;
+
+    public function unset(string $key): void;
+
+    public function addBranch(string $branch): void;
+
+    public function removeBranch(string $branch): void;
+
     public function addLibrary(string $path, string $url): void;
 
     public function removeLibrary(string $path): void;
