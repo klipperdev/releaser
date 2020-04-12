@@ -20,7 +20,8 @@
             "default": "auto",
             "enum": [
                 "auto",
-                "git-subtree"
+                "git-subtree",
+                "splitsh-lite"
             ]
         },
         "branch-pattern": {
