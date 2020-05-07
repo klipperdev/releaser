@@ -311,7 +311,7 @@ class ConfigCommand extends BaseCommand
     /**
      * @throws
      */
-    private function formatValue($value): string
+    private function formatValue(mixed $value): string
     {
         if (\is_bool($value)) {
             $value = var_export($value, true);

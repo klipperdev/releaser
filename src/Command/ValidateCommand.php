@@ -82,7 +82,7 @@ class ValidateCommand extends BaseCommand
         return $isStrict && $warnings ? 1 : 0;
     }
 
-    private function outputResult(IOInterface $io, string $name, &$errors, &$warnings): void
+    private function outputResult(IOInterface $io, string $name, $errors, $warnings): void
     {
         if ($errors) {
             $io->writeError('<error>'.$name.' is invalid, the following errors/warnings were found:</error>');

@@ -139,7 +139,7 @@ class SplitCommand extends BaseCommand
     {
         $config = $this->getReleaser()->getConfig();
         $baseDir = $config->getBaseDir();
-        $configLibraries = $config->get('libraries');
+        $configLibraries = (array) $config->get('libraries', []);
         $libraryNames = $input->getArgument('library');
         $this->libraries = $configLibraries;
 
