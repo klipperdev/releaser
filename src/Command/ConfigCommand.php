@@ -282,6 +282,9 @@ class ConfigCommand extends BaseCommand
         return false;
     }
 
+    /**
+     * @throws
+     */
     private function listConfiguration(array $contents, ?string $k = null): int
     {
         $io = $this->getIO();
@@ -305,6 +308,9 @@ class ConfigCommand extends BaseCommand
         return 0;
     }
 
+    /**
+     * @throws
+     */
     private function formatValue($value): string
     {
         if (\is_bool($value)) {
