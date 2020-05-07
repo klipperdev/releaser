@@ -140,7 +140,7 @@ class SplitCommand extends BaseCommand
         $config = $this->getReleaser()->getConfig();
         $baseDir = $config->getBaseDir();
         $configLibraries = (array) $config->get('libraries', []);
-        $libraryNames = $input->getArgument('library');
+        $libraryNames = (array) $input->getArgument('library');
         $this->libraries = $configLibraries;
 
         foreach ($libraryNames as $libraryName) {
@@ -157,6 +157,8 @@ class SplitCommand extends BaseCommand
         foreach (array_keys($this->libraries) as $libraryName) {
             if (!isset($configLibraries[$libraryName]) || !is_dir($baseDir.'/'.$libraryName)) {
                 unset($this->libraries[$libraryName]);
+            } elseif (!empty($libraryNames) && !\in_array($libraryName, $libraryNames, true)) {
+                unset($this->libraries[$libraryName]);
             }
         }
     }
@@ -172,9 +174,10 @@ class SplitCommand extends BaseCommand
         $fetch = $input->getOption('fetch');
         $allowScratch = $input->getOption('scratch');
         $allLibraries = $input->getOption('all-lib');
+        $libraryNames = (array) $input->getArgument('library');
 
         foreach ($this->branches as $branch) {
-            $libraryPaths = $allLibraries
+            $libraryPaths = $allLibraries || !empty($libraryNames)
                 ? array_keys($this->libraries)
                 : GitUtil::getLibraries($this->libraries, $branch, $this->depth);
 
