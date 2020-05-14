@@ -124,7 +124,9 @@ class GitUtil
 
         foreach ($files as $file) {
             foreach ($libraryPaths as $libraryPath) {
-                if (0 === strpos($file, $libraryPath)) {
+                $libraryPath = rtrim($libraryPath, '/');
+
+                if (0 === strpos($file, $libraryPath.'/')) {
                     $paths[] = $libraryPath;
 
                     break;
