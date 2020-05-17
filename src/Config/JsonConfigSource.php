@@ -40,6 +40,7 @@ class JsonConfigSource implements ConfigSourceInterface
     {
         $config = $this->readJson();
         $config[$key] = $value;
+        ksort($config);
         $this->saveJson($config);
     }
 
@@ -62,6 +63,7 @@ class JsonConfigSource implements ConfigSourceInterface
 
         if (!\in_array($branch, $config['branches'] ?? [], true)) {
             $config['branches'][] = $branch;
+            sort($config['branches']);
         }
 
         $this->saveJson($config);
@@ -84,6 +86,7 @@ class JsonConfigSource implements ConfigSourceInterface
     {
         $config = $this->readJson();
         $config['libraries'][$path] = $url;
+        ksort($config['libraries']);
         $this->saveJson($config);
     }
 
@@ -104,6 +107,7 @@ class JsonConfigSource implements ConfigSourceInterface
     {
         $config = $this->readJson();
         $config['binaries'][$binary] = $pathReplacement;
+        ksort($config['binaries']);
         $this->saveJson($config);
     }
 
