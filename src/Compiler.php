@@ -84,9 +84,14 @@ class Compiler
             ->in(__DIR__.'/../vendor/justinrainbow/json-schema/')
             ->in(__DIR__.'/../vendor/psr/')
             ->in(__DIR__.'/../vendor/symfony/console/')
+            ->in(__DIR__.'/../vendor/symfony/polyfill-ctype/')
+            ->in(__DIR__.'/../vendor/symfony/polyfill-intl-grapheme/')
+            ->in(__DIR__.'/../vendor/symfony/polyfill-intl-normalizer/')
             ->in(__DIR__.'/../vendor/symfony/polyfill-mbstring/')
+            ->in(__DIR__.'/../vendor/symfony/polyfill-php80')
             ->in(__DIR__.'/../vendor/symfony/process/')
             ->in(__DIR__.'/../vendor/symfony/service-contracts/')
+            ->in(__DIR__.'/../vendor/symfony/string/')
             ->sort($finderSort)
         ;
 
