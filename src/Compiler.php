@@ -84,6 +84,7 @@ class Compiler
             ->in(__DIR__.'/../vendor/justinrainbow/json-schema/')
             ->in(__DIR__.'/../vendor/psr/')
             ->in(__DIR__.'/../vendor/symfony/console/')
+            ->in(__DIR__.'/../vendor/symfony/deprecation-contracts/')
             ->in(__DIR__.'/../vendor/symfony/polyfill-ctype/')
             ->in(__DIR__.'/../vendor/symfony/polyfill-intl-grapheme/')
             ->in(__DIR__.'/../vendor/symfony/polyfill-intl-normalizer/')

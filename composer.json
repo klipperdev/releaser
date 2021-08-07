@@ -33,12 +33,12 @@
         "ext-json": "*",
         "ext-phar": "*",
         "composer/semver": "^1.5.0",
-        "justinrainbow/json-schema": "^5.2",
+        "justinrainbow/json-schema": "^5.2.0",
         "psr/log": "^1.1.0",
         "seld/phar-utils": "^1.1.0",
-        "symfony/console": "^5.1.0",
-        "symfony/finder": "^5.1.0",
-        "symfony/process": "^5.1.0"
+        "symfony/console": "^5.3.0",
+        "symfony/finder": "^5.3.0",
+        "symfony/process": "^5.3.0"
     },
     "replace": {
         "symfony/polyfill-php73": "*"
