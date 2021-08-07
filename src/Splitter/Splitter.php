@@ -111,20 +111,20 @@ class Splitter implements SplitterInterface, LogAdapterInterface
         $libraryRemote = LibraryUtil::getRemoteName($libraryPath);
 
         $this->io->write(
-            sprintf('[<info>%s</info>][<info>%s</info>] Library splitting in progress...', $branch, $libraryPath),
+            sprintf('[<info>%s</info>][<info>%s</info>] In progress...', $branch, $libraryPath),
             $this->io->isVeryVerbose()
         );
 
         try {
             // Add remote identified of library
-            $this->logSplit($branch, $libraryPath, 'Adding the remote repository of the library...');
+            $this->logSplit($branch, $libraryPath, 'Adding remote repository of library...');
             ProcessUtil::run(['git', 'remote', 'add', $libraryRemote, $libraryUrl], false);
 
             // Split the library
             $scratched = $this->getAdapter()->split($this, $branch, $subTreeBranch, $libraryPath, $libraryRemote, $allowScratch);
 
             // Push to the Git repository of library
-            $this->logSplit($branch, $libraryPath, 'Pushing to the remote repository...');
+            $this->logSplit($branch, $libraryPath, 'Pushing to remote repository...');
 
             try {
                 $this->pushLibraryRepository($branch, $libraryBranch, $libraryRemote, $scratched);
@@ -140,13 +140,13 @@ class Splitter implements SplitterInterface, LogAdapterInterface
             $this->cleanLibraryWorkingBranch($branch, $libraryPath, $libraryBranch, $libraryRemote);
 
             $this->io->overwrite(
-                sprintf('[<info>%s</info>][<info>%s</info>] Library splitting success', $branch, $libraryPath)
+                sprintf('[<info>%s</info>][<info>%s</info>] Success', $branch, $libraryPath)
             );
         } catch (\Throwable $e) {
             $success = false;
             $this->cleanLibraryWorkingBranch($branch, $libraryPath, $libraryBranch, $libraryRemote);
             $this->io->overwriteError(
-                sprintf('[<info>%s</info>][<info>%s</info>] <error>Library splitting error: %s</error>', $branch, $libraryPath, $e->getMessage())
+                sprintf('[<info>%s</info>][<info>%s</info>] <error>Error: %s</error>', $branch, $libraryPath, $e->getMessage())
             );
         }
 
@@ -156,7 +156,7 @@ class Splitter implements SplitterInterface, LogAdapterInterface
     public function logSplit(string $branch, string $libraryPath, string $message, int $verbosity = OutputInterface::VERBOSITY_NORMAL): void
     {
         $this->io->overwrite(
-            sprintf('[<info>%s</info>][<info>%s</info>] Library splitting in progress: %s', $branch, $libraryPath, $message),
+            sprintf('[<info>%s</info>][<info>%s</info>] In progress: %s', $branch, $libraryPath, $message),
             $this->io->isVeryVerbose(),
             null,
             $verbosity

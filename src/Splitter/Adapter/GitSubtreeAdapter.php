@@ -38,11 +38,11 @@ class GitSubtreeAdapter implements SplitterAdapterInterface
         ProcessUtil::run(['git', 'fetch', $libraryRemote, '--depth=1'], false);
 
         // Create the local branch for the remote library
-        $log->logSplit($branch, $libraryPath, 'Creating the local branch...');
+        $log->logSplit($branch, $libraryPath, 'Creating local branch...');
         ProcessUtil::run(['git', 'branch', $libraryBranch, $libraryRemote.'/'.$branch], false);
 
         // Split the library
-        $log->logSplit($branch, $libraryPath, 'Splitting the local branch...');
+        $log->logSplit($branch, $libraryPath, 'Splitting local branch...');
         $scratched = false;
 
         try {

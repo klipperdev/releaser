@@ -34,7 +34,7 @@ class SplitshLiteAdapter implements SplitterAdapterInterface
         $libraryBranch = LibraryUtil::getBranchName($subTreeBranch, $libraryPath);
 
         // Split the library
-        $log->logSplit($branch, $libraryPath, 'Splitting the local branch...');
+        $log->logSplit($branch, $libraryPath, 'Splitting local branch...');
         $scratched = false;
 
         try {
