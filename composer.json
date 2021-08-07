@@ -32,7 +32,7 @@
         "ext-ctype": "*",
         "ext-json": "*",
         "ext-phar": "*",
-        "composer/semver": "^1.5.0",
+        "composer/semver": "^3.2.0",
         "justinrainbow/json-schema": "^5.2.0",
         "psr/log": "^1.1.0",
         "seld/phar-utils": "^1.1.0",
