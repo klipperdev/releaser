@@ -129,7 +129,7 @@ class ConfigCommand extends BaseCommand
             $uniqueKey = GitUtil::getUniqueKey();
 
             if (null === $uniqueKey) {
-                throw new \RuntimeException(sprintf('The working directory is not managed by GIT'));
+                throw new \RuntimeException('The working directory is not managed by GIT');
             }
 
             $configFile = sprintf('%s/%s.json', $this->config->get('data-dir'), $uniqueKey);
@@ -201,6 +201,7 @@ class ConfigCommand extends BaseCommand
                 }
 
                 break;
+
             case 'lib':
             case 'library':
             case 'libraries':
@@ -215,6 +216,7 @@ class ConfigCommand extends BaseCommand
                 }
 
                 break;
+
             case 'bin':
             case 'binary':
             case 'binaries':
@@ -229,6 +231,7 @@ class ConfigCommand extends BaseCommand
                 }
 
                 break;
+
             default:
                 if (!\array_key_exists($settingKey, Config::$defaultConfig)) {
                     throw new RuntimeException(sprintf('The "%s" setting key does not exist', $settingKey));

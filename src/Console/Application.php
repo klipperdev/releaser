@@ -82,6 +82,7 @@ class Application extends BaseApplication
                 $this->releaser = Factory::create($this->io, $this->configFile, $this->initialWorkingDirectory);
             } catch (\Throwable $e) {
                 $this->io->writeError($e->getMessage());
+
                 exit(1);
             }
         }
