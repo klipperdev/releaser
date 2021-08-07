@@ -55,7 +55,5 @@ class SplitshLiteAdapter implements SplitterAdapterInterface
     {
         $opt = $scratch ? ['--scratch'] : [];
         ProcessUtil::run(['splitsh-lite', '--prefix='.$libraryPath, '--target=heads/'.$libraryBranch, '--quiet', ...$opt]);
-        ProcessUtil::run(['git', 'checkout', 'heads/'.$libraryBranch]);
-        ProcessUtil::run(['git', 'switch', '-c', $libraryBranch]);
     }
 }

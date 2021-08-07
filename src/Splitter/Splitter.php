@@ -90,16 +90,14 @@ class Splitter implements SplitterInterface, LogAdapterInterface
         }
 
         $this->io->write(sprintf('[<info>%s</info>] Create subtree working branch <comment>%s</comment>', $branch, $subTreeBranch), true, OutputInterface::VERBOSITY_VERBOSE);
-        ProcessUtil::run(['git', 'checkout', '-B', $subTreeBranch, $remoteBranch]);
+        ProcessUtil::run(['git', 'branch', $subTreeBranch, $remoteBranch]);
     }
 
     public function terminate(string $remote, string $branch): void
     {
-        $remoteBranch = $remote.'/'.$branch;
         $subTreeBranch = BranchUtil::getSubTreeBranchName($branch);
 
         $this->io->write(sprintf('[<info>%s</info>] Clean subtree working branch <comment>%s</comment>', $branch, $subTreeBranch), true, OutputInterface::VERBOSITY_VERBOSE);
-        ProcessUtil::run(['git', 'checkout', '-B', $branch, $remoteBranch], false);
         ProcessUtil::run(['git', 'branch', '-D', $subTreeBranch], false);
     }
 
