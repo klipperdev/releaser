@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <phpunit backupGlobals="false"
          backupStaticAttributes="false"
          colors="true"
@@ -9,21 +8,22 @@
          processIsolation="false"
          stopOnFailure="false"
          bootstrap="vendor/autoload.php"
-        >
+>
+    <coverage>
+        <include>
+            <directory>./src</directory>
+        </include>
+
+        <exclude>
+            <file>.php-cs-fixer.dist.php</file>
+            <directory>./tests</directory>
+            <directory>./vendor</directory>
+        </exclude>
+    </coverage>
 
     <testsuites>
         <testsuite name="Klipper Test Suite">
             <directory>./tests/</directory>
         </testsuite>
     </testsuites>
-
-    <filter>
-        <whitelist>
-            <directory>./</directory>
-            <exclude>
-                <directory>./tests</directory>
-                <directory>./vendor</directory>
-            </exclude>
-        </whitelist>
-    </filter>
 </phpunit>
